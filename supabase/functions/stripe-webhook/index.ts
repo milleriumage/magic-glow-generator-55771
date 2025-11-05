@@ -26,7 +26,7 @@ serve(async (req) => {
     const body = await req.text();
     const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
     
-    let event;
+    let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret || '');
     } catch (err) {
@@ -43,7 +43,7 @@ serve(async (req) => {
 
     switch (event.type) {
       case 'checkout.session.completed': {
-        const session = event.data.object;
+        const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.user_id;
         const credits = parseInt(session.metadata?.credits || '0');
         
@@ -87,7 +87,7 @@ serve(async (req) => {
 
       case 'customer.subscription.created':
       case 'customer.subscription.updated': {
-        const subscription = event.data.object;
+        const subscription = event.data.object as Stripe.Subscription;
         const userId = subscription.metadata?.user_id;
         const planId = subscription.metadata?.plan_id;
 
@@ -113,7 +113,7 @@ serve(async (req) => {
       }
 
       case 'customer.subscription.deleted': {
-        const subscription = event.data.object;
+        const subscription = event.data.object as Stripe.Subscription;
         
         await supabase
           .from('user_subscriptions')

@@ -204,31 +204,24 @@ const { data } = await supabase.functions.invoke('create-pix-payment', {
 - **Secret Key:** `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`
 - **Public Key:** `pk_live_51QOMivKg4NAdmMglJPmORiI4jlIBKRf4beqR4eaxJx0xZWHz13eTD8KgSdWWizgnzepLs0PcGF35fx9TTSBPIaYR00E5EFl6ZZ`
 
-**⚠️ DADOS REAIS DO BANCO DE DADOS:**
-
-**Planos de Assinatura Ativos:**
+**Produtos de Créditos:**
 ```
-ID: basic  - Basic Plan - $9   - 1000 créditos/mês - prod_SyYK31lYwaraZW
-ID: pro    - Pro Plan   - $15  - 2000 créditos/mês - prod_SyYMs3lMIhORSP
-```
-
-**Pacotes de Créditos Disponíveis:**
-```
-ID: pack_100    - 100 créditos   - $1    - prod_SyYehlUkfzq9Qn
-ID: pack_200    - 200 créditos   - $2    - prod_SyYasByos1peGR
-ID: pack_500    - 500 créditos   - $5    - prod_SyYeStqRDuWGFF
-ID: pack_1000   - 1000 créditos  - $10   - prod_SyYfzJ1fjz9zb9
-ID: pack_2500   - 2500 créditos  - $25   - prod_SyYmVrUetdiIBY
-ID: pack_5000   - 5000 créditos  - $50   - prod_SyYg54VfiOr7LQ ⭐ MELHOR VALOR
-ID: pack_10000  - 10000 créditos - $100  - prod_SyYhva8A2beAw6
+100 créditos   - $1    - prod_SyYehlUkfzq9Qn
+200 créditos   - $2    - prod_SyYasByos1peGR
+500 créditos   - $5    - prod_SyYeStqRDuWGFF
+1000 créditos  - $10   - prod_SyYfzJ1fjz9zb9
+2500 créditos  - $25   - prod_SyYmVrUetdiIBY
+5000 créditos  - $50   - prod_SyYg54VfiOr7LQ
+10000 créditos - $100  - prod_SyYhva8A2beAw6
 ```
 
-✅ **Todos os IDs de produtos Stripe estão corretos e ativos no banco de dados**
-
-**⚠️ URLs de Redirecionamento:**
-- **NÃO USE**: `http://localhost:3000`
-- **USE**: URL do preview Lovable ou domínio de produção
-- **Configurar em**: https://supabase.com/dashboard/project/cpggicxvmgyljvoxlpnu/auth/url-configuration
+**Planos de Assinatura:**
+```
+Free Plan  - $0   - prod_SyYChoQJbIb1ye
+Basic Plan - $9   - prod_SyYK31lYwaraZW
+Pro Plan   - $15  - prod_SyYMs3lMIhORSP
+VIP Plan   - $25  - (adicionar ID se necessário)
+```
 
 ---
 
