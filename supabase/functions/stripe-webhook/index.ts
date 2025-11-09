@@ -48,28 +48,43 @@ serve(async (req) => {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.user_id;
         const credits = parseInt(session.metadata?.credits || '0');
+        const type = session.metadata?.type;
         
         if (!userId || !credits) {
           console.error('Missing metadata:', session.metadata);
           break;
         }
 
+        console.log(`Processing ${type} payment for user ${userId}: ${credits} credits`);
+
+        // Get current user credits
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('credits_balance')
+          .eq('id', userId)
+          .single();
+
+        const currentBalance = profile?.credits_balance || 0;
+        const newBalance = currentBalance + credits;
+
         // Update user credits
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({ credits_balance: supabase.rpc('increment_credits', { user_id: userId, amount: credits }) })
+          .update({ credits_balance: newBalance })
           .eq('id', userId);
 
         if (updateError) {
           console.error('Error updating credits:', updateError);
+        } else {
+          console.log(`Credits updated: ${currentBalance} -> ${newBalance}`);
         }
 
         // Record transaction
         await supabase.from('transactions').insert({
           user_id: userId,
-          type: 'credit_purchase',
+          type: type === 'subscription' ? 'subscription' : 'credit_purchase',
           amount: credits,
-          description: `Stripe purchase: ${credits} credits`,
+          description: `Stripe ${type}: ${credits} credits`,
         });
 
         // Record external payment
@@ -83,7 +98,7 @@ serve(async (req) => {
           metadata: { session },
         });
 
-        console.log(`Credits added for user ${userId}: ${credits}`);
+        console.log(`Payment processed successfully for user ${userId}`);
         break;
       }
 

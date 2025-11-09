@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useCredits } from '../hooks/useCredits';
-import { createStripeSession } from '../services/mockApi';
+import { supabase } from '../src/integrations/supabase/client';
 import { TransactionType, Screen, SubscriptionPlan, CreditPackage } from '../types';
 import Notification from '../components/Notification';
 import SubscriptionPlanCard from '../components/SubscriptionPlanCard';
@@ -24,16 +24,20 @@ const Store: React.FC<{ navigate: (screen: Screen) => void; }> = ({ navigate }) 
     const handlePurchase = async (pkg: typeof creditPackages[0]) => {
         setLoadingPackage(pkg.id);
         try {
-            await createStripeSession(pkg.id);
-            // In a real app, a webhook would handle this. We simulate it here.
-            setTimeout(() => {
-                addCredits(pkg.credits + pkg.bonus, `Purchase of ${pkg.credits} credits`, TransactionType.CREDIT_PURCHASE);
-                setNotification(`${pkg.credits} credit pack purchased successfully!`);
-                setLoadingPackage(null);
-                setTimeout(() => setNotification(null), 3000);
-            }, 2000); // Simulate payment confirmation
+            const { data, error } = await supabase.functions.invoke('create-stripe-checkout', {
+                body: { type: 'credit_package', id: pkg.id }
+            });
+
+            if (error) throw error;
+
+            if (data.url) {
+                // Redirect to Stripe checkout
+                window.location.href = data.url;
+            }
         } catch (error) {
-            console.error("Failed to create Stripe session", error);
+            console.error("Failed to create Stripe checkout:", error);
+            setNotification(`Failed to create checkout session`);
+            setTimeout(() => setNotification(null), 3000);
             setLoadingPackage(null);
         }
     };
