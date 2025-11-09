@@ -15,7 +15,7 @@ import CreatorPayouts from './screens/CreatorPayouts';
 import DeveloperPanel from './screens/DeveloperPanel';
 import TimeoutScreen from './components/TimeoutScreen';
 import MyCreations from './screens/MyCreations';
-import Login from './screens/Login';
+import Auth from './screens/Auth';
 import Account from './screens/Account';
 import UXKit from './screens/UXKit';
 import DesignStudio from './screens/DesignStudio';
@@ -109,7 +109,7 @@ const AppContent: React.FC = () => {
     return <MainLayout />;
   }
 
-  return <Login />;
+  return <Auth />;
 };
 
 const App: React.FC = () => {

@@ -2,6 +2,7 @@
   "imports": {
     "std/": "https://deno.land/std@0.168.0/",
     "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2",
-    "stripe": "https://esm.sh/stripe@14.21.0"
+    "stripe": "https://esm.sh/stripe@14.21.0",
+    "resend": "npm:resend@2.0.0"
   }
 }
