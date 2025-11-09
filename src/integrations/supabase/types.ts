@@ -14,33 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_settings: {
-        Row: {
-          created_at: string | null
-          dev_settings: Json
-          id: string
-          navbar_visibility: Json
-          sidebar_visibility: Json
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          dev_settings?: Json
-          id?: string
-          navbar_visibility?: Json
-          sidebar_visibility?: Json
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          dev_settings?: Json
-          id?: string
-          navbar_visibility?: Json
-          sidebar_visibility?: Json
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
       content_items: {
         Row: {
           blur_level: number
@@ -109,72 +82,6 @@ export type Database = {
           id?: string
           price?: number
           stripe_product_id?: string
-        }
-        Relationships: []
-      }
-      email_verification_codes: {
-        Row: {
-          code: string
-          created_at: string
-          email: string
-          expires_at: string
-          id: string
-          type: string
-          used: boolean
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          email: string
-          expires_at: string
-          id?: string
-          type: string
-          used?: boolean
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          email?: string
-          expires_at?: string
-          id?: string
-          type?: string
-          used?: boolean
-        }
-        Relationships: []
-      }
-      external_payments: {
-        Row: {
-          amount: number
-          created_at: string | null
-          currency: string
-          id: string
-          metadata: Json | null
-          provider: string
-          provider_payment_id: string
-          status: string
-          user_id: string
-        }
-        Insert: {
-          amount: number
-          created_at?: string | null
-          currency: string
-          id?: string
-          metadata?: Json | null
-          provider: string
-          provider_payment_id: string
-          status: string
-          user_id: string
-        }
-        Update: {
-          amount?: number
-          created_at?: string | null
-          currency?: string
-          id?: string
-          metadata?: Json | null
-          provider?: string
-          provider_payment_id?: string
-          status?: string
-          user_id?: string
         }
         Relationships: []
       }
@@ -316,33 +223,27 @@ export type Database = {
       }
       profiles: {
         Row: {
-          bio: string | null
           credits_balance: number
           earned_balance: number
           id: string
-          last_withdrawal_at: string | null
           profile_picture_url: string | null
           updated_at: string | null
           username: string
           vitrine_slug: string | null
         }
         Insert: {
-          bio?: string | null
           credits_balance?: number
           earned_balance?: number
           id: string
-          last_withdrawal_at?: string | null
           profile_picture_url?: string | null
           updated_at?: string | null
           username: string
           vitrine_slug?: string | null
         }
         Update: {
-          bio?: string | null
           credits_balance?: number
           earned_balance?: number
           id?: string
-          last_withdrawal_at?: string | null
           profile_picture_url?: string | null
           updated_at?: string | null
           username?: string
@@ -446,33 +347,6 @@ export type Database = {
           name?: string
           price?: number
           stripe_product_id?: string | null
-        }
-        Relationships: []
-      }
-      support_messages: {
-        Row: {
-          created_at: string
-          id: string
-          message: string
-          read: boolean
-          sender: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          message: string
-          read?: boolean
-          sender: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          message?: string
-          read?: boolean
-          sender?: string
-          user_id?: string
         }
         Relationships: []
       }
