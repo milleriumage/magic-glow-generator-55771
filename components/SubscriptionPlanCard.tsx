@@ -27,6 +27,14 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({ plan, isAdm
         setIsLoading(true);
         try {
             const { supabase } = await import('../src/integrations/supabase/client');
+            
+            // Check if user is authenticated
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                throw new Error('Please login to subscribe to a plan');
+            }
+
             const { data, error } = await supabase.functions.invoke('create-stripe-checkout', {
                 body: { type: 'subscription', id: plan.id }
             });
@@ -39,7 +47,7 @@ const SubscriptionPlanCard: React.FC<SubscriptionPlanCardProps> = ({ plan, isAdm
             }
         } catch (error) {
             console.error('Failed to create Stripe checkout:', error);
-            setNotification('Failed to create checkout session');
+            setNotification(error.message || 'Failed to create checkout session');
             setTimeout(() => setNotification(null), 3000);
             setIsLoading(false);
         }

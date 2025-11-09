@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCredits } from '../hooks/useCredits';
 import { supabase } from '../src/integrations/supabase/client';
 import { TransactionType, Screen, SubscriptionPlan, CreditPackage } from '../types';
@@ -7,14 +7,10 @@ import SubscriptionPlanCard from '../components/SubscriptionPlanCard';
 import EditPlanModal from '../components/EditPlanModal';
 import EditCreditPackModal from '../components/EditCreditPackModal';
 
-const CheckIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 mr-2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-);
-
 const Store: React.FC<{ navigate: (screen: Screen) => void; }> = ({ navigate }) => {
-    const { addCredits, subscriptionPlans, creditPackages, userSubscription, userRole } = useCredits();
+    const { addCredits, subscriptionPlans, creditPackages, userSubscription, userRole, isLoggedIn } = useCredits();
     const [loadingPackage, setLoadingPackage] = useState<string | null>(null);
-    const [notification, setNotification] = useState<string | null>(null);
+    const [notification, setNotification] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
     const [activeTab, setActiveTab] = useState<'credits' | 'plans'>('credits');
     const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
     const [editingCreditPack, setEditingCreditPack] = useState<CreditPackage | null>(null);
@@ -22,8 +18,24 @@ const Store: React.FC<{ navigate: (screen: Screen) => void; }> = ({ navigate }) 
     const isDeveloper = userRole === 'developer';
 
     const handlePurchase = async (pkg: typeof creditPackages[0]) => {
+        // Check if user is logged in
+        if (!isLoggedIn) {
+            setNotification({ message: 'Please login to purchase credits', type: 'error' });
+            setTimeout(() => {
+                setNotification(null);
+                navigate('login');
+            }, 2000);
+            return;
+        }
+
         setLoadingPackage(pkg.id);
         try {
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (!session) {
+                throw new Error('No active session. Please login.');
+            }
+
             const { data, error } = await supabase.functions.invoke('create-stripe-checkout', {
                 body: { type: 'credit_package', id: pkg.id }
             });
@@ -36,24 +48,19 @@ const Store: React.FC<{ navigate: (screen: Screen) => void; }> = ({ navigate }) 
             }
         } catch (error) {
             console.error("Failed to create Stripe checkout:", error);
-            setNotification(`Failed to create checkout session`);
+            setNotification({ message: error.message || 'Failed to create checkout session', type: 'error' });
             setTimeout(() => setNotification(null), 3000);
             setLoadingPackage(null);
         }
     };
 
-    const TabButton: React.FC<{tab: 'credits' | 'plans', label: string}> = ({tab, label}) => (
-        <button
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-lg font-semibold rounded-t-lg transition-colors ${activeTab === tab ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'}`}
-        >
-            {label}
-        </button>
-    );
+const CheckIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 mr-2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+);
 
   return (
     <div className="max-w-4xl mx-auto">
-      {notification && <Notification message={notification} type="success" />}
+      {notification && <Notification message={notification.message} type={notification.type} />}
       {editingPlan && <EditPlanModal plan={editingPlan} onClose={() => setEditingPlan(null)} />}
       {editingCreditPack && <EditCreditPackModal creditPackage={editingCreditPack} onClose={() => setEditingCreditPack(null)} />}
 
@@ -65,8 +72,18 @@ const Store: React.FC<{ navigate: (screen: Screen) => void; }> = ({ navigate }) 
 
       <div className="border-b border-neutral-700 mb-8">
         <div className="flex">
-            <TabButton tab="credits" label="Credit Packs" />
-            <TabButton tab="plans" label="Subscription Plans" />
+            <button
+                onClick={() => setActiveTab('credits')}
+                className={`px-4 py-2 text-lg font-semibold rounded-t-lg transition-colors ${activeTab === 'credits' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'}`}
+            >
+                Credit Packs
+            </button>
+            <button
+                onClick={() => setActiveTab('plans')}
+                className={`px-4 py-2 text-lg font-semibold rounded-t-lg transition-colors ${activeTab === 'plans' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white'}`}
+            >
+                Subscription Plans
+            </button>
         </div>
       </div>
 
